@@ -1,703 +1,138 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ficha de alumno</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #F5F4F0;
-  --surface: #FFFFFF;
-  --surface2: #EFEDE8;
-  --border: #E0DDD6;
-  --border-dark: #C9C6BE;
-  --text: #1C1B18;
-  --text-muted: #72706A;
-  --text-hint: #AEACA6;
-  --green: #2D6A4F;
-  --green-light: #D8EFE4;
-  --green-text: #1B4332;
-  --amber: #92400E;
-  --amber-light: #FEF3C7;
-  --red: #7F1D1D;
-  --red-light: #FEE2E2;
-  --purple: #4C1D95;
-  --purple-light: #EDE9FE;
-  --blue: #1E3A5F;
-  --blue-light: #DBEAFE;
-  --orange: #9A3412;
-  --orange-light: #FFEDD5;
-  --radius: 12px;
-  --radius-sm: 7px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 14px;
-  line-height: 1.6;
-}
-.search-bar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-.search-logo {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
-  white-space: nowrap;
-  color: var(--text);
-}
-.search-logo span { color: var(--green); }
-.search-wrap {
-  flex: 1;
-  max-width: 480px;
-  position: relative;
-}
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-hint);
-  font-size: 16px;
-  pointer-events: none;
-}
-.search-input {
-  width: 100%;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 9px 12px 9px 36px;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.search-input:focus {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(45,106,79,0.1);
-  background: var(--surface);
-}
-.search-results-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  z-index: 100;
-  overflow: hidden;
-  display: none;
-}
-.search-results-dropdown.open { display: block; }
-.search-result-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  cursor: pointer;
-  transition: background 0.1s;
-  border-bottom: 1px solid var(--border);
-}
-.search-result-item:last-child { border-bottom: none; }
-.search-result-item:hover { background: var(--bg); }
-.result-avatar {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 600;
-  flex-shrink: 0;
-}
-.result-name { font-weight: 500; font-size: 13px; }
-.result-email { font-size: 12px; color: var(--text-muted); }
-.result-badge {
-  margin-left: auto;
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-.sources {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: auto;
-}
-.source-pill {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 3px 9px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.pill-woo { background: var(--purple-light); color: var(--purple); }
-.pill-hs  { background: var(--orange-light); color: var(--orange); }
-.layout {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 0;
-  min-height: calc(100vh - 57px);
-}
-.left-panel {
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  padding: 24px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.alumno-avatar {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; font-weight: 600;
-  background: var(--purple-light);
-  color: var(--purple);
-  flex-shrink: 0;
-}
-.alumno-name { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
-.alumno-since { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.info-block { display: flex; flex-direction: column; gap: 10px; }
-.info-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-hint);
-  margin-bottom: 4px;
-}
-.info-row {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.info-key { font-size: 11px; color: var(--text-muted); }
-.info-val { font-size: 13px; font-weight: 500; }
-.info-val.mono { font-family: 'DM Mono', monospace; font-size: 12px; }
-.emails-block { display: flex; flex-direction: column; gap: 6px; }
-.email-entry {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--bg);
-  font-size: 12px;
-  gap: 6px;
-}
-.email-entry .email-addr {
-  flex: 1;
-  font-size: 12px;
-  color: var(--text);
-  word-break: break-all;
-  font-family: 'DM Mono', monospace;
-}
-.email-primary-badge {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 1px 6px;
-  border-radius: 20px;
-  background: var(--green-light);
-  color: var(--green-text);
-  white-space: nowrap;
-}
-.email-source {
-  font-size: 10px;
-  font-weight: 500;
-  padding: 1px 6px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
-.email-source.woo { background: var(--purple-light); color: var(--purple); }
-.email-source.hs  { background: var(--orange-light); color: var(--orange); }
-.email-conflict {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  background: var(--amber-light);
-  border: 1px solid #FDE68A;
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  font-size: 12px;
-  color: var(--amber);
-  margin-top: 2px;
-}
-.divider-line {
-  border: none;
-  border-top: 1px solid var(--border);
-}
-.right-panel {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  overflow-y: auto;
-}
-.section-title-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.section-title {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.section-link {
-  font-size: 12px;
-  color: var(--green);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-.section-link:hover { text-decoration: underline; }
-.metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 4px;
-}
-.metric-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
-}
-.metric-label { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
-.metric-value { font-size: 20px; font-weight: 600; letter-spacing: -0.5px; }
-.metric-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.orders-table {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-th {
-  text-align: left;
-  padding: 10px 14px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-}
-td {
-  padding: 11px 14px;
-  font-size: 13px;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--bg); }
-.order-id { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-muted); }
-.programa-list { display: flex; flex-direction: column; gap: 3px; }
-.programa-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--purple-light);
-  color: var(--purple);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 20px;
-  width: fit-content;
-}
-.badge {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 9px; border-radius: 20px;
-  font-size: 11px; font-weight: 500;
-}
-.badge-paid     { background: var(--green-light); color: var(--green-text); }
-.badge-pending  { background: var(--amber-light); color: var(--amber); }
-.badge-cancelled{ background: var(--red-light); color: var(--red); }
-.desglose-row { display: none; }
-.desglose-row.open { display: table-row; }
-.desglose-inner {
-  background: var(--bg);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  font-size: 12px;
-}
-.desglose-line {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-muted);
-}
-.desglose-line:last-child { border-bottom: none; }
-.desglose-line.total-line {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--text);
-  padding-top: 8px;
-  margin-top: 4px;
-  border-top: 1px solid var(--border-dark);
-  border-bottom: none;
-}
-.desglose-line.discount-line { color: var(--green); }
-.expand-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-hint);
-  font-size: 13px;
-  padding: 2px 4px;
-  border-radius: 4px;
-  transition: color 0.15s, background 0.15s;
-  line-height: 1;
-}
-.expand-btn:hover { color: var(--text); background: var(--surface2); }
-.hs-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.hs-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-}
-.hs-field-label { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
-.hs-field-val { font-size: 13px; font-weight: 500; }
-.hs-stage {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--orange-light); color: var(--orange);
-  padding: 3px 10px; border-radius: 20px;
-  font-size: 12px; font-weight: 500;
-}
-.hs-tag {
-  display: inline-block;
-  background: var(--orange-light); color: var(--orange);
-  font-size: 11px; font-weight: 500;
-  padding: 2px 8px; border-radius: 20px;
-  margin: 2px 2px 0 0;
-}
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 40px;
-  text-align: center;
-  color: var(--text-muted);
-  gap: 12px;
-}
-.empty-icon { font-size: 36px; opacity: 0.4; }
-.empty-title { font-size: 15px; font-weight: 500; color: var(--text); }
-.empty-sub { font-size: 13px; max-width: 320px; }
-@media (max-width: 800px) {
-  .layout { grid-template-columns: 1fr; }
-  .left-panel { border-right: none; border-bottom: 1px solid var(--border); }
-  .metrics-grid { grid-template-columns: 1fr 1fr; }
-}
-</style>
-</head>
-<body>
-
-<div class="search-bar">
-  <div class="search-logo">ficha<span>alumno</span></div>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" class="search-input" id="search-input" placeholder="Buscar por nombre o correo…" autocomplete="off" oninput="onSearch()" onfocus="onSearch()" />
-    <div class="search-results-dropdown" id="search-dropdown"></div>
-  </div>
-  <div class="sources">
-    <span class="source-pill pill-woo">WooCommerce</span>
-    <span class="source-pill pill-hs">HubSpot</span>
-  </div>
-</div>
-
-<div class="layout">
-  <div class="left-panel" id="left-panel">
-    <div class="empty-state" id="left-empty">
-      <div class="empty-icon">👤</div>
-      <div class="empty-title">Sin alumno seleccionado</div>
-      <div class="empty-sub">Busca por nombre o correo para ver la ficha unificada.</div>
-    </div>
-    <div id="left-content" style="display:none; display:flex; flex-direction:column; gap:18px;">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div class="alumno-avatar" id="lft-avatar"></div>
-        <div>
-          <div class="alumno-name" id="lft-name"></div>
-          <div class="alumno-since" id="lft-since"></div>
-        </div>
-      </div>
-      <hr class="divider-line">
-      <div class="info-block">
-        <div class="info-label">Datos de contacto</div>
-        <div class="info-row">
-          <span class="info-key">Teléfono</span>
-          <span class="info-val" id="lft-tel"></span>
-        </div>
-        <div class="info-row">
-          <span class="info-key">País</span>
-          <span class="info-val" id="lft-pais"></span>
-        </div>
-      </div>
-      <hr class="divider-line">
-      <div class="info-block">
-        <div class="info-label">Correos registrados</div>
-        <div class="emails-block" id="lft-emails"></div>
-        <div class="email-conflict" id="lft-conflict" style="display:none;">
-          ⚠️ <span>Esta persona tiene correos distintos en WooCommerce y HubSpot. Verifica cuál es el principal.</span>
-        </div>
-      </div>
-      <hr class="divider-line">
-      <div class="info-block">
-        <div class="info-label">Ver en</div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <a class="section-link" id="lft-link-woo" href="#" target="_blank">🛒 WooCommerce ↗</a>
-          <a class="section-link" id="lft-link-hs" href="#" target="_blank">🟠 HubSpot ↗</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="right-panel" id="right-panel">
-    <div class="empty-state" id="right-empty">
-      <div class="empty-icon">🔍</div>
-      <div class="empty-title">Busca un alumno para comenzar</div>
-      <div class="empty-sub">Verás aquí todas sus compras, programas, pagos y actividad en HubSpot en un solo lugar.</div>
-    </div>
-    <div id="right-content" style="display:none;">
-      <div>
-        <div class="section-title-row">
-          <span class="section-title">📊 Resumen</span>
-        </div>
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-label">Total compras</div>
-            <div class="metric-value" id="met-total"></div>
-            <div class="metric-sub" id="met-total-sub"></div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Programas</div>
-            <div class="metric-value" id="met-programas"></div>
-            <div class="metric-sub">adquiridos</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Última compra</div>
-            <div class="metric-value" style="font-size:14px;" id="met-ultima"></div>
-            <div class="metric-sub" id="met-ultima-sub"></div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">HubSpot</div>
-            <div class="metric-value" style="font-size:14px; margin-top:6px;" id="met-hs-stage"></div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="section-title-row">
-          <span class="section-title">🛒 Órdenes en WooCommerce</span>
-          <span class="section-link" id="woo-link-all">Ver en WooCommerce ↗</span>
-        </div>
-        <div class="orders-table">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:110px;">Orden</th>
-                <th style="width:100px;">Fecha</th>
-                <th>Programas</th>
-                <th style="width:130px;">Total</th>
-                <th style="width:110px;">Estado</th>
-                <th style="width:44px;"></th>
-              </tr>
-            </thead>
-            <tbody id="orders-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-      <div>
-        <div class="section-title-row">
-          <span class="section-title">🟠 Actividad en HubSpot</span>
-          <span class="section-link" id="hs-link-contact">Ver en HubSpot ↗</span>
-        </div>
-        <div class="hs-grid" id="hs-grid"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-const alumnos = [
-  {
-    id: 1,
-    nombre: "Valentina Rojas",
-    initials: "VR",
-    avatarColor: "#EDE9FE",
-    avatarTextColor: "#4C1D95",
-    desde: "Cliente desde marzo 2024",
-    telefono: "+56 9 8712 3344",
-    pais: "🇨🇱 Chile",
-    emails: [
-      { addr: "valentina.rojas@gmail.com", primary: true,  sources: ["woo", "hs"] },
-      { addr: "v.rojas@empresa.cl",        primary: false, sources: ["hs"] },
-    ],
-    wooId: "34521",
-    hsId: "1029384",
-    ordenes: [
-      {
-        id: "WC-10234", fecha: "14 may 2025",
-        programas: ["Diplomado en autismo"],
-        items: [{ nombre: "Diplomado en autismo", precio: 500000 }],
-        cupon: null,
-        subtotal: 500000, descuento: 0, total: 500000,
-        metodo: "Tarjeta", estado: "pagado"
-      },
-      {
-        id: "WC-10190", fecha: "02 feb 2025",
-        programas: ["Curso de TDAH", "Taller familias"],
-        items: [
-          { nombre: "Curso de TDAH", precio: 40000 },
-          { nombre: "Taller familias", precio: 25000 }
-        ],
-        cupon: { codigo: "EARLY25", monto: 10000 },
-        subtotal: 65000, descuento: 10000, total: 55000,
-        metodo: "Webpay", estado: "pagado"
-      }
-    ],
-    hs: {
-      canal: "Orgánico",
-      ultimoContacto: "12 may 2025",
-      propietario: "Carla Muñoz",
-      notas: "Consultó por próxima cohorte del diplomado. Muy comprometida."
-    }
-  },
-  {
-    id: 2,
-    nombre: "Martín Ibáñez",
-    initials: "MI",
-    avatarColor: "#D8EFE4",
-    avatarTextColor: "#1B4332",
-    desde: "Cliente desde mayo 2025",
-    telefono: "+56 9 6644 2211",
-    pais: "🇨🇱 Chile",
-    emails: [
-      { addr: "martin.ibanez@gmail.com",  primary: true,  sources: ["woo"] },
-      { addr: "martin.ibanez@work.com",   primary: false, sources: ["hs"] },
-    ],
-    wooId: "34580",
-    hsId: "1029400",
-    ordenes: [
-      {
-        id: "WC-10235", fecha: "15 may 2025",
-        programas: ["Liderazgo", "Finanzas personales"],
-        items: [
-          { nombre: "Diplomado liderazgo", precio: 490000 },
-          { nombre: "Finanzas personales", precio: 290000 }
-        ],
-        cupon: { codigo: "DESCUENTO10", monto: 10000 },
-        subtotal: 780000, descuento: 10000, total: 770000,
-        metodo: "Transferencia", estado: "pendiente"
-      }
-    ],
-    hs: {
-      canal: "Referido",
-      ultimoContacto: "15 may 2025",
-      propietario: "Andrés Soto",
-      notas: "Llegó por referido de Valentina Rojas. Pendiente confirmación de pago."
-    }
-  },
-  {
-    id: 3,
-    nombre: "Camila Fuentes",
-    initials: "CF",
+const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/xsgge3wkvrdptwbjgfxlflfqm89uju3l";
+
+let searchTimer = null;
+let ultimoResultado = null;
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function getInitials(nombre) {
+  const parts = String(nombre || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '??';
+  return parts.slice(0, 2).map(p => p[0]).join('').toUpperCase();
+}
+
+function formatMoney(value, currency = 'CLP') {
+  const n = Number(value || 0);
+  return '$' + n.toLocaleString('es-CL') + (currency ? ' ' + currency : '');
+}
+
+function normalizarAlumnoDesdeMake(data) {
+  const nombre = [data.nombre_hubspot, data.apellido_hubspot].filter(Boolean).join(' ').trim() || data.busqueda || 'Contacto sin nombre';
+  const email = data.email_hubspot || data.busqueda || '';
+  const telefono = data.telefono_hubspot || '—';
+  const hubspotUrl = data.hubspot_url || '#';
+
+  return {
+    id: data.hubspot_id || email,
+    nombre,
+    initials: getInitials(nombre),
     avatarColor: "#FFEDD5",
     avatarTextColor: "#9A3412",
-    desde: "Cliente desde enero 2025",
-    telefono: "+56 9 5533 8877",
-    pais: "🇦🇷 Argentina",
-    emails: [
-      { addr: "camila.fuentes@hotmail.com", primary: true, sources: ["woo", "hs"] },
-    ],
-    wooId: "34488",
-    hsId: "1029210",
-    ordenes: [
-      {
-        id: "WC-10236", fecha: "16 may 2025",
-        programas: ["Coaching ejecutivo"],
-        items: [{ nombre: "Coaching ejecutivo", precio: 450000 }],
-        cupon: null,
-        subtotal: 450000, descuento: 0, total: 450000,
-        metodo: "Tarjeta", estado: "pagado"
-      },
-      {
-        id: "WC-10101", fecha: "10 ene 2025",
-        programas: ["Curso de TDAH"],
-        items: [{ nombre: "Curso de TDAH", precio: 40000 }],
-        cupon: null,
-        subtotal: 40000, descuento: 0, total: 40000,
-        metodo: "Tarjeta", estado: "pagado"
-      }
-    ],
+    desde: data.hubspot_id ? `Contacto HubSpot ID ${data.hubspot_id}` : "Contacto encontrado en HubSpot",
+    telefono,
+    pais: "—",
+    emails: email ? [
+      { addr: email, primary: true, sources: ["hs"] }
+    ] : [],
+    wooId: "",
+    hsId: data.hubspot_id || "",
+    hubspot_url: hubspotUrl,
+    ordenes: Array.isArray(data.ordenes) ? data.ordenes : [],
     hs: {
-      canal: "Instagram",
-      ultimoContacto: "16 may 2025",
-      propietario: "Carla Muñoz",
-      notas: "Segunda compra. Muy satisfecha con el primer curso."
+      canal: data.canal_origen || "—",
+      ultimoContacto: data.ultimo_contacto || "—",
+      propietario: data.propietario || "—",
+      notas: "Datos consultados en vivo desde HubSpot mediante Make."
     }
-  }
-];
+  };
+}
 
 function onSearch() {
-  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const q = document.getElementById('search-input').value.trim();
   const dd = document.getElementById('search-dropdown');
-  if (!q) { dd.classList.remove('open'); return; }
-  const matches = alumnos.filter(a =>
-    a.nombre.toLowerCase().includes(q) ||
-    a.emails.some(e => e.addr.toLowerCase().includes(q))
-  );
-  if (!matches.length) {
-    dd.innerHTML = '<div style="padding:14px 16px; font-size:13px; color:var(--text-muted);">Sin resultados para "' + q + '"</div>';
+
+  clearTimeout(searchTimer);
+
+  if (!q) {
+    dd.classList.remove('open');
+    dd.innerHTML = '';
+    return;
+  }
+
+  if (q.length < 3) {
+    dd.innerHTML = '<div style="padding:14px 16px; font-size:13px; color:var(--text-muted);">Escribe al menos 3 caracteres para buscar.</div>';
     dd.classList.add('open');
     return;
   }
-  dd.innerHTML = matches.map(a => {
-    const srcBadges = [...new Set(a.emails.flatMap(e => e.sources))]
-      .map(s => `<span class="source-pill pill-${s}" style="font-size:10px;">${s === 'woo' ? 'WooCommerce' : 'HubSpot'}</span>`).join('');
-    return `<div class="search-result-item" onclick="selectAlumno(${a.id})">
-      <div class="result-avatar" style="background:${a.avatarColor}; color:${a.avatarTextColor};">${a.initials}</div>
-      <div>
-        <div class="result-name">${a.nombre}</div>
-        <div class="result-email">${a.emails[0].addr}</div>
-      </div>
-      <div style="margin-left:auto; display:flex; gap:4px;">${srcBadges}</div>
-    </div>`;
-  }).join('');
+
+  dd.innerHTML = '<div style="padding:14px 16px; font-size:13px; color:var(--text-muted);">Buscando en HubSpot...</div>';
   dd.classList.add('open');
+
+  searchTimer = setTimeout(() => buscarAlumnoEnMake(q), 650);
+}
+
+async function buscarAlumnoEnMake(q) {
+  const dd = document.getElementById('search-dropdown');
+
+  try {
+    const url = `${MAKE_WEBHOOK_URL}?busqueda=${encodeURIComponent(q)}`;
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Make respondió con estado ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data || data.resultado !== 'ok' || !data.email_hubspot) {
+      dd.innerHTML = `<div style="padding:14px 16px; font-size:13px; color:var(--text-muted);">Sin resultados para "${escapeHtml(q)}".</div>`;
+      dd.classList.add('open');
+      return;
+    }
+
+    ultimoResultado = normalizarAlumnoDesdeMake(data);
+
+    dd.innerHTML = `
+      <div class="search-result-item" onclick="selectAlumnoEnVivo()">
+        <div class="result-avatar" style="background:${ultimoResultado.avatarColor}; color:${ultimoResultado.avatarTextColor};">${escapeHtml(ultimoResultado.initials)}</div>
+        <div>
+          <div class="result-name">${escapeHtml(ultimoResultado.nombre)}</div>
+          <div class="result-email">${escapeHtml(ultimoResultado.emails[0]?.addr || q)}</div>
+        </div>
+        <div style="margin-left:auto; display:flex; gap:4px;">
+          <span class="source-pill pill-hs" style="font-size:10px;">HubSpot</span>
+        </div>
+      </div>
+    `;
+    dd.classList.add('open');
+
+  } catch (error) {
+    dd.innerHTML = `
+      <div style="padding:14px 16px; font-size:13px; color:var(--red);">
+        No se pudo consultar Make. Revisa que el escenario esté activo y que el Webhook Response tenga CORS.
+        <br><span style="font-size:11px; color:var(--text-muted);">${escapeHtml(error.message)}</span>
+      </div>`;
+    dd.classList.add('open');
+  }
+}
+
+function selectAlumnoEnVivo() {
+  if (!ultimoResultado) return;
+  document.getElementById('search-input').value = ultimoResultado.emails[0]?.addr || ultimoResultado.nombre;
+  document.getElementById('search-dropdown').classList.remove('open');
+  renderLeft(ultimoResultado);
+  renderRight(ultimoResultado);
 }
 
 document.addEventListener('click', e => {
@@ -706,19 +141,11 @@ document.addEventListener('click', e => {
   }
 });
 
-function selectAlumno(id) {
-  const a = alumnos.find(x => x.id === id);
-  if (!a) return;
-  document.getElementById('search-input').value = a.nombre;
-  document.getElementById('search-dropdown').classList.remove('open');
-  renderLeft(a);
-  renderRight(a);
-}
-
 function renderLeft(a) {
   document.getElementById('left-empty').style.display = 'none';
   const lc = document.getElementById('left-content');
   lc.style.display = 'flex';
+
   document.getElementById('lft-avatar').textContent = a.initials;
   document.getElementById('lft-avatar').style.background = a.avatarColor;
   document.getElementById('lft-avatar').style.color = a.avatarTextColor;
@@ -726,10 +153,25 @@ function renderLeft(a) {
   document.getElementById('lft-since').textContent = a.desde;
   document.getElementById('lft-tel').textContent = a.telefono || '—';
   document.getElementById('lft-pais').textContent = a.pais || '—';
-  document.getElementById('lft-link-woo').href = `https://tutienda.com/wp-admin/post.php?post=${a.wooId}&action=edit`;
-  document.getElementById('lft-link-hs').href = `https://app.hubspot.com/contacts/${a.hsId}`;
+
+  const wooLink = document.getElementById('lft-link-woo');
+  wooLink.href = '#';
+  wooLink.style.opacity = '0.45';
+  wooLink.onclick = (e) => {
+    e.preventDefault();
+    alert('Las órdenes de WooCommerce todavía no están conectadas a la búsqueda en vivo.');
+  };
+
+  const hsLink = document.getElementById('lft-link-hs');
+  hsLink.href = a.hubspot_url || '#';
+
   const emailsEl = document.getElementById('lft-emails');
   emailsEl.innerHTML = '';
+
+  if (!a.emails.length) {
+    emailsEl.innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Sin correo disponible.</div>';
+  }
+
   a.emails.forEach(e => {
     const srcTags = e.sources.map(s =>
       `<span class="email-source ${s}">${s === 'woo' ? 'WooCommerce' : 'HubSpot'}</span>`
@@ -738,73 +180,84 @@ function renderLeft(a) {
     emailsEl.innerHTML += `
       <div class="email-entry">
         <span style="font-size:14px;">📧</span>
-        <span class="email-addr">${e.addr}</span>
+        <span class="email-addr">${escapeHtml(e.addr)}</span>
         ${primaryBadge}
         ${srcTags}
       </div>`;
   });
-  const conflictEl = document.getElementById('lft-conflict');
-  const hasConflict = a.emails.length > 1 && a.emails.some(e => e.sources.length === 1);
-  conflictEl.style.display = hasConflict ? 'flex' : 'none';
+
+  document.getElementById('lft-conflict').style.display = 'none';
 }
 
 function renderRight(a) {
   document.getElementById('right-empty').style.display = 'none';
   document.getElementById('right-content').style.display = 'block';
-  const totalPagado = a.ordenes.filter(o => o.estado === 'pagado').reduce((s, o) => s + o.total, 0);
-  const totalProgramas = [...new Set(a.ordenes.flatMap(o => o.programas))].length;
-  const ultimaOrden = a.ordenes[0];
-  document.getElementById('met-total').textContent = '$' + totalPagado.toLocaleString('es-CL');
-  document.getElementById('met-total-sub').textContent = a.ordenes.length + ' orden' + (a.ordenes.length !== 1 ? 'es' : '');
+
+  const ordenes = Array.isArray(a.ordenes) ? a.ordenes : [];
+  const totalPagado = ordenes.filter(o => ['pagado', 'completed', 'processing'].includes(o.estado)).reduce((s, o) => s + Number(o.total || 0), 0);
+  const totalProgramas = [...new Set(ordenes.flatMap(o => o.programas || []))].length;
+  const ultimaOrden = ordenes[0];
+
+  document.getElementById('met-total').textContent = formatMoney(totalPagado, ordenes[0]?.moneda || 'CLP');
+  document.getElementById('met-total-sub').textContent = ordenes.length ? `${ordenes.length} orden${ordenes.length !== 1 ? 'es' : ''}` : 'Sin órdenes conectadas';
   document.getElementById('met-programas').textContent = totalProgramas;
-  document.getElementById('met-ultima').textContent = ultimaOrden.fecha;
-  document.getElementById('met-ultima-sub').textContent = ultimaOrden.id;
-  document.getElementById('met-hs-stage').innerHTML = `<a href="https://app.hubspot.com/contacts/${a.hsId}/timeline" target="_blank" style="display:inline-flex; align-items:center; gap:5px; color:var(--orange); font-size:13px; font-weight:500; text-decoration:none;">📧 Ver correos ↗</a>`;
-  document.getElementById('woo-link-all').onclick = () => window.open(`https://tutienda.com/wp-admin/edit.php?post_type=shop_order&s=${encodeURIComponent(a.emails[0].addr)}`);
-  document.getElementById('hs-link-contact').onclick = () => window.open(`https://app.hubspot.com/contacts/${a.hsId}`);
+  document.getElementById('met-ultima').textContent = ultimaOrden ? ultimaOrden.fecha : '—';
+  document.getElementById('met-ultima-sub').textContent = ultimaOrden ? ultimaOrden.id : 'Pendiente conectar WooCommerce';
+  document.getElementById('met-hs-stage').innerHTML = `<a href="${a.hubspot_url || '#'}" target="_blank" style="display:inline-flex; align-items:center; gap:5px; color:var(--orange); font-size:13px; font-weight:500; text-decoration:none;">📧 Ver HubSpot ↗</a>`;
+
+  document.getElementById('woo-link-all').onclick = () => alert('La búsqueda de órdenes WooCommerce todavía no está conectada a esta ruta.');
+  document.getElementById('hs-link-contact').onclick = () => window.open(a.hubspot_url || '#', '_blank');
+
   const tbody = document.getElementById('orders-tbody');
   tbody.innerHTML = '';
-  a.ordenes.forEach((o, i) => {
-    const badgeClass = { pagado: 'badge-paid', pendiente: 'badge-pending', cancelado: 'badge-cancelled' }[o.estado];
-    const badgeLabel = { pagado: '✓ Pagado', pendiente: '⏳ Pendiente', cancelado: '✕ Cancelado' }[o.estado];
-    const programaTags = o.programas.map(p => `<span class="programa-tag">📖 ${p}</span>`).join('');
-    const rowId = 'desglose-' + a.id + '-' + i;
+
+  if (!ordenes.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="padding:18px; color:var(--text-muted); text-align:center;">
+          Aún no se están devolviendo órdenes de WooCommerce en la consulta en vivo. 
+          El contacto de HubSpot ya está conectado.
+        </td>
+      </tr>`;
+  }
+
+  ordenes.forEach((o, i) => {
+    const estado = o.estado || 'pendiente';
+    const badgeClass = { pagado: 'badge-paid', completed: 'badge-paid', processing: 'badge-paid', pendiente: 'badge-pending', pending: 'badge-pending', cancelado: 'badge-cancelled', cancelled: 'badge-cancelled' }[estado] || 'badge-pending';
+    const badgeLabel = { pagado: '✓ Pagado', completed: '✓ Pagado', processing: '✓ Procesando', pendiente: '⏳ Pendiente', pending: '⏳ Pendiente', cancelado: '✕ Cancelado', cancelled: '✕ Cancelado' }[estado] || estado;
+    const programaTags = (o.programas || []).map(p => `<span class="programa-tag">📖 ${escapeHtml(p)}</span>`).join('');
+    const rowId = 'desglose-live-' + i;
+
     tbody.innerHTML += `
       <tr onclick="toggleDesglose('${rowId}')" style="cursor:pointer;">
-        <td><span class="order-id">#${o.id}</span></td>
-        <td style="color:var(--text-muted); font-size:12px;">${o.fecha}</td>
-        <td><div class="programa-list">${programaTags}</div></td>
-        <td style="font-weight:600; font-family:'DM Mono',monospace; font-size:13px;">$${o.total.toLocaleString('es-CL')}</td>
-        <td><span class="badge ${badgeClass}">${badgeLabel}</span></td>
+        <td><span class="order-id">#${escapeHtml(o.id)}</span></td>
+        <td style="color:var(--text-muted); font-size:12px;">${escapeHtml(o.fecha || '—')}</td>
+        <td><div class="programa-list">${programaTags || '—'}</div></td>
+        <td style="font-weight:600; font-family:'DM Mono',monospace; font-size:13px;">${formatMoney(o.total, o.moneda || 'CLP')}</td>
+        <td><span class="badge ${badgeClass}">${escapeHtml(badgeLabel)}</span></td>
         <td><button class="expand-btn" id="btn-${rowId}">▾</button></td>
       </tr>
       <tr class="desglose-row" id="${rowId}">
         <td colspan="6">
           <div class="desglose-inner">
-            ${o.items.map(it => `
+            ${(o.items || []).map(it => `
               <div class="desglose-line">
-                <span>${it.nombre}</span>
-                <span>$${it.precio.toLocaleString('es-CL')}</span>
+                <span>${escapeHtml(it.nombre)}</span>
+                <span>${formatMoney(it.precio, o.moneda || 'CLP')}</span>
               </div>`).join('')}
-            ${o.cupon ? `
-              <div class="desglose-line discount-line">
-                <span>🏷 Cupón <strong>${o.cupon.codigo}</strong></span>
-                <span>− $${o.cupon.monto.toLocaleString('es-CL')}</span>
-              </div>` : ''}
             <div class="desglose-line total-line">
               <span>Total</span>
-              <span>$${o.total.toLocaleString('es-CL')} CLP</span>
+              <span>${formatMoney(o.total, o.moneda || 'CLP')}</span>
             </div>
             <div style="margin-top:8px; font-size:11px; color:var(--text-muted);">
-              💳 ${o.metodo} &nbsp;·&nbsp; Orden #${o.id}
+              💳 ${escapeHtml(o.metodo || '—')} &nbsp;·&nbsp; Orden #${escapeHtml(o.id)}
             </div>
           </div>
         </td>
       </tr>`;
   });
-  const hs = a.hs;
-  const hsUrl = `https://app.hubspot.com/contacts/${a.hsId}`;
-  const hsEmailUrl = `https://app.hubspot.com/contacts/${a.hsId}/timeline`;
+
+  const hsUrl = a.hubspot_url || '#';
   document.getElementById('hs-grid').innerHTML = `
     <div class="hs-card" style="grid-column: 1 / -1; background: var(--orange-light); border-color: #FED7AA; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
       <div>
@@ -812,8 +265,8 @@ function renderRight(a) {
         <div style="font-size:13px; color:var(--orange); margin-top:2px;">Revisa correos enviados, historial de actividad y etapa del contacto directamente en HubSpot.</div>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <a href="${hsEmailUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:var(--orange); color:#fff; font-size:13px; font-weight:500; padding:8px 14px; border-radius:var(--radius-sm); text-decoration:none; white-space:nowrap;">
-          📧 Correos enviados ↗
+        <a href="${hsUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:var(--orange); color:#fff; font-size:13px; font-weight:500; padding:8px 14px; border-radius:var(--radius-sm); text-decoration:none; white-space:nowrap;">
+          📧 Correos e historial ↗
         </a>
         <a href="${hsUrl}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:#fff; color:var(--orange); border:1px solid #FCA97A; font-size:13px; font-weight:500; padding:8px 14px; border-radius:var(--radius-sm); text-decoration:none; white-space:nowrap;">
           🟠 Ficha completa ↗
@@ -822,15 +275,15 @@ function renderRight(a) {
     </div>
     <div class="hs-card">
       <div class="hs-field-label">Canal de origen</div>
-      <div class="hs-field-val">${hs.canal}</div>
+      <div class="hs-field-val">${escapeHtml(a.hs.canal)}</div>
     </div>
     <div class="hs-card">
       <div class="hs-field-label">Último contacto</div>
-      <div class="hs-field-val">${hs.ultimoContacto}</div>
+      <div class="hs-field-val">${escapeHtml(a.hs.ultimoContacto)}</div>
     </div>
     <div class="hs-card" style="grid-column: 1 / -1;">
-      <div class="hs-field-label">Última nota interna</div>
-      <div class="hs-field-val" style="font-weight:400; color:var(--text-muted); font-size:13px;">"${hs.notas}"</div>
+      <div class="hs-field-label">Nota interna</div>
+      <div class="hs-field-val" style="font-weight:400; color:var(--text-muted); font-size:13px;">${escapeHtml(a.hs.notas)}</div>
     </div>
   `;
 }
@@ -843,5 +296,3 @@ function toggleDesglose(rowId) {
   if (btn) btn.textContent = isOpen ? '▾' : '▴';
 }
 </script>
-</body>
-</html>
