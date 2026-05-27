@@ -38,21 +38,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: 'DM Sans', Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 14px;
-  line-height: 1.6;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; font-size: 14px; line-height: 1.6;
 }
 .topbar {
-  background: var(--surface);
-  padding: 14px 28px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 20;
+  background: var(--surface); padding: 14px 28px;
+  display: flex; align-items: center; gap: 20px;
+  position: sticky; top: 0; z-index: 20;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   border-bottom: 2px solid transparent;
   border-image: linear-gradient(90deg, #4EC9FD 0%, #704EFD 100%) 1;
@@ -62,15 +54,12 @@ body {
 .topbar-title {
   font-size: 14px; font-weight: 600;
   background: var(--adipa-grad);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: 0.01em;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; letter-spacing: 0.01em;
 }
 .search-wrap { flex: 1; max-width: 440px; position: relative; margin-left: 8px; }
 .search-icon {
-  position: absolute; left: 12px; top: 50%;
-  transform: translateY(-50%);
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
   color: var(--text-hint); font-size: 15px; pointer-events: none;
 }
 .search-input {
@@ -82,8 +71,7 @@ body {
 }
 .search-input:focus {
   border-color: var(--adipa-cyan);
-  box-shadow: 0 0 0 3px rgba(78,201,253,0.15);
-  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(78,201,253,0.15); background: var(--surface);
 }
 .search-dropdown {
   position: absolute; top: calc(100% + 6px); left: 0; right: 0;
@@ -184,8 +172,7 @@ body {
 .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .metric-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 14px 16px;
-  border-top: 3px solid var(--adipa-border);
+  border-radius: var(--radius); padding: 14px 16px; border-top: 3px solid var(--adipa-border);
 }
 .metric-card.accent { border-top: 3px solid; border-image: linear-gradient(90deg, #4EC9FD, #704EFD) 1; }
 .metric-lbl { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
@@ -616,30 +603,43 @@ function renderLeft(a) {
 function renderRight(a) {
   document.getElementById('right-empty').style.display = 'none';
   document.getElementById('right-content').style.display = 'block';
+
   const ordenes = Array.isArray(a.ordenes) ? a.ordenes : [];
-  const totalPagado = ordenes
+  const ordenesFiltradas2 = ordenes.filter(o => o.id && o.id.trim() !== '');
+  const totalPagado = ordenesFiltradas2
     .filter(o => ['pagado','completed','processing'].includes(String(o.estado).toLowerCase()))
     .reduce((s,o) => s + Number(o.total||0), 0);
-  const totalProgramas = [...new Set(ordenes.flatMap(o => o.programas||[]))].length;
-  const ultima = ordenes[0];
-  document.getElementById('met-total').textContent     = money(totalPagado, ordenes[0]?.moneda || 'CLP');
-  document.getElementById('met-total-sub').textContent = ordenes.length ? `${ordenes.length} orden${ordenes.length!==1?'es':''}` : 'Sin órdenes aún';
+  const totalProgramas = [...new Set(ordenesFiltradas2.flatMap(o => o.programas||[]))].length;
+  const ultima = ordenesFiltradas2[0];
+
+  // Usar la moneda de la orden pagada con mayor total
+  const ordenPagada = ordenesFiltradas2
+    .filter(o => ['pagado','completed','processing'].includes(String(o.estado).toLowerCase()))
+    .sort((a,b) => Number(b.total||0) - Number(a.total||0))[0];
+  const monedaPrincipal = ordenPagada?.moneda || ordenesFiltradas2[0]?.moneda || 'CLP';
+
+  document.getElementById('met-total').textContent     = money(totalPagado, monedaPrincipal);
+  document.getElementById('met-total-sub').textContent = ordenesFiltradas2.length ? `${ordenesFiltradas2.length} orden${ordenesFiltradas2.length!==1?'es':''}` : 'Sin órdenes aún';
   document.getElementById('met-programas').textContent = totalProgramas || '—';
   document.getElementById('met-ultima').textContent    = ultima ? ultima.fecha : '—';
   document.getElementById('met-ultima-sub').textContent= ultima ? ultima.id   : 'Pendiente WooCommerce';
   document.getElementById('met-hs-link').innerHTML     = `<a href="${esc(a.hubspot_url||'#')}" target="_blank" style="color:var(--orange);font-weight:600;font-size:13px;text-decoration:none;">📧 Ver correos ↗</a>`;
+
   document.getElementById('woo-link-all').onclick = () =>
     alert('Las órdenes WooCommerce aún no están conectadas a la búsqueda en vivo.');
+
   const hsUrl = a.hubspot_url || '#';
   document.getElementById('hs-link-top').href   = hsUrl;
   document.getElementById('hs-btn-emails').href = hsUrl;
   document.getElementById('hs-btn-ficha').href  = hsUrl;
+
   const tbody = document.getElementById('orders-tbody');
   tbody.innerHTML = '';
-  if (!ordenes.length) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Aún no se devuelven órdenes WooCommerce en la consulta en vivo.<br>El contacto HubSpot ya está conectado ✓</td></tr>`;
+  const ordenesFiltradas = ordenesFiltradas2;
+  if (!ordenesFiltradas.length) {
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">No se encontraron órdenes para este contacto.<br>El contacto HubSpot ya está conectado ✓</td></tr>`;
   }
-  ordenes.forEach((o, i) => {
+  ordenesFiltradas.forEach((o, i) => {
     const estado = o.estado || 'pendiente';
     const bClass = { pagado:'badge-paid', completed:'badge-paid', processing:'badge-paid', pendiente:'badge-pending', pending:'badge-pending', cancelado:'badge-cancelled', cancelled:'badge-cancelled' }[estado] || 'badge-pending';
     const bLabel = { pagado:'✓ Pagado', completed:'✓ Pagado', processing:'✓ Procesando', pendiente:'⏳ Pendiente', pending:'⏳ Pendiente', cancelado:'✕ Cancelado', cancelled:'✕ Cancelado' }[estado] || estado;
@@ -678,6 +678,7 @@ function renderRight(a) {
         </td>
       </tr>`;
   });
+
   document.getElementById('hs-info-grid').innerHTML = `
     <div class="hs-card">
       <div class="hs-card-lbl">Canal de origen</div>
