@@ -313,7 +313,7 @@ tr.order-row:hover td { background: var(--adipa-light); cursor: pointer; }
         <div class="alumno-avatar" id="lft-avatar"></div>
         <div>
           <div class="alumno-name" id="lft-name"></div>
-          <div class="alumno-sub"  id="lft-since"></div>
+          <div class="alumno-sub" id="lft-since"></div>
         </div>
       </div>
       <hr class="divider">
@@ -341,7 +341,7 @@ tr.order-row:hover td { background: var(--adipa-light); cursor: pointer; }
         <div class="info-section-title">Ver en</div>
         <div class="ext-links">
           <a class="ext-link woo" id="lft-link-woo" href="#" target="_blank">🛒 WooCommerce ↗</a>
-          <a class="ext-link hs"  id="lft-link-hs"  href="#" target="_blank">🟠 HubSpot ↗</a>
+          <a class="ext-link hs" id="lft-link-hs" href="#" target="_blank">🟠 HubSpot ↗</a>
         </div>
       </div>
     </div>
@@ -392,8 +392,9 @@ tr.order-row:hover td { background: var(--adipa-light); cursor: pointer; }
                 <th style="width:110px;">Orden</th>
                 <th style="width:96px;">Fecha</th>
                 <th>Programas</th>
-                <th style="width:126px;">Total</th>
-                <th style="width:110px;">Estado</th>
+                <th style="width:86px;">País</th>
+                <th style="width:120px;">Total</th>
+                <th style="width:100px;">Estado</th>
                 <th style="width:42px;"></th>
               </tr>
             </thead>
@@ -452,6 +453,7 @@ function normalizarOrden(o) {
     total:  Number(o.total || o['Total'] || 0),
     moneda: String(o.moneda || o['Currency'] || 'CLP'),
     metodo: String(o.metodo || o['Payment Method Title'] || o.metodo_pago || '—'),
+    sitio:  String(o.sitio || ''),
     programas: Array.isArray(o.programas)
       ? o.programas
       : (o['Line Items'] || []).map(li => li.name || li.Name || '').filter(Boolean),
@@ -491,6 +493,7 @@ function normalizarDesde(data) {
       total: data.total || data.Total,
       moneda: data.moneda,
       metodo: data.metodo_pago,
+      sitio: 'Chile',
       programas: [],
       items: []
     }];
@@ -634,7 +637,7 @@ function renderRight(a) {
   const tbody = document.getElementById('orders-tbody');
   tbody.innerHTML = '';
   if (!ordenes.length) {
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Aún no se devuelven órdenes WooCommerce en la consulta en vivo.<br>El contacto HubSpot ya está conectado ✓</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Aún no se devuelven órdenes WooCommerce en la consulta en vivo.<br>El contacto HubSpot ya está conectado ✓</td></tr>`;
   }
   ordenes.forEach((o, i) => {
     const estado = o.estado || 'pendiente';
@@ -642,17 +645,21 @@ function renderRight(a) {
     const bLabel = { pagado:'✓ Pagado', completed:'✓ Pagado', processing:'✓ Procesando', pendiente:'⏳ Pendiente', pending:'⏳ Pendiente', cancelado:'✕ Cancelado', cancelled:'✕ Cancelado' }[estado] || estado;
     const progTags = (o.programas||[]).map(p => `<span class="prog-tag">📖 ${esc(p)}</span>`).join('');
     const rid = `desglose-${i}`;
+    const sitioFlags = { 'Chile':'🇨🇱', 'Colombia':'🇨🇴', 'México':'🇲🇽', 'Mexico':'🇲🇽' };
+    const sitioLabel = o.sitio || '—';
+    const sitioFlag = sitioFlags[sitioLabel] || '🌎';
     tbody.innerHTML += `
       <tr class="order-row" onclick="toggleDesglose('${rid}')">
         <td><span class="order-num">#${esc(o.id)}</span></td>
         <td style="color:var(--text-muted);font-size:12px;">${esc(o.fecha||'—')}</td>
         <td><div class="prog-list">${progTags||'—'}</div></td>
+        <td style="font-size:12px;">${sitioFlag} ${esc(sitioLabel)}</td>
         <td style="font-family:'DM Mono',monospace;font-weight:700;font-size:13px;color:var(--adipa);">${money(o.total, o.moneda||'CLP')}</td>
         <td><span class="badge ${bClass}">${bLabel}</span></td>
         <td><button class="expand-btn" id="btn-${rid}">▾</button></td>
       </tr>
       <tr class="desglose-row" id="${rid}">
-        <td colspan="6" style="padding:4px 10px 10px;">
+        <td colspan="7" style="padding:4px 10px 10px;">
           <div class="desglose-inner">
             ${(o.items||[]).map(it=>`
               <div class="desglose-line">
